@@ -1,0 +1,284 @@
+---
+title: "Evidencia-2"
+author: "Diego Samperio - A01662935"
+date: "2023-05-02"
+output: html_document
+---
+
+PARTE 1 DE LA EVIDENCIA: \n
+
+Link a mi video: https://youtu.be/M5Nnf_Te9V8 \n
+
+PARTE 2 DE LA EVIDENCIA: \n
+
+Cargaremos las 20 secuencias de virus de animales parecidos al sars-cov-2:\n
+
+1. "MT121215" Severe acute respiratory syndrome coronavirus 2 isolate SARS-CoV-2/human/CHN/SH01/2020, complete genome (Pangolin de Malasia) \n
+
+2. "MT040333" Pangolin coronavirus isolate PCoV_GX-P4L, complete genome (Pangolin de China)  \n
+
+3. "MG772933" Bat SARS-like coronavirus isolate bat-SL-CoVZC45, complete genome \n
+
+4. "MN996532" Bat coronavirus RaTG13, complete genome  \n
+
+5. "MG772934" Bat SARS-like coronavirus isolate bat-SL-CoVZXC21, complete genome  \n
+
+6. "KJ473808" BtRf-AlphaCoV/YN2012, complete genome  \n
+
+7. "KJ473809" BtNv-AlphaCoV/SC2013, complete genome  \n
+
+8. "KJ473810" BtMs-AlphaCoV/GS2013, complete genome  \n
+
+9. "KJ473811" BtRf-BetaCoV/JL2012, complete genome  \n
+
+10. "KJ473812" BtRf-BetaCoV/HeB2013, complete genome  \n
+
+11. "KJ473813" BtRf-BetaCoV/SX2013, complete genome \n
+
+12. "KJ473814" BtRs-BetaCoV/HuB2013, complete genome  \n
+
+13. "KJ473815" BtRs-BetaCoV/GX2013, complete genome \n
+
+14. "KJ473816" BtRs-BetaCoV/YN2013, complete genome  \n
+
+15. "KJ473820" BtPa-BetaCoV/GD2013, complete genome \n
+
+16. "KJ473821" BtVs-BetaCoV/SC2013, complete genome  \n
+
+17. "KJ473822" BtTp-BetaCoV/GX2012, complete genome  \n
+
+18. "MT012098" Severe acute respiratory syndrome coronavirus 2 isolate SARS-CoV-2/human/IND/29/2020, complete genome  \n
+
+19. "MT121216" Pangolin coronavirus isolate MP789, complete genome  \n
+
+20. "MT123291" Severe acute respiratory syndrome coronavirus 2 isolate SARS-CoV-2/human/CHN/IQTC02/2020, complete genome  \n
+
+
+\n 1. Carga las librerías necesarias:\n
+
+```{r}
+suppressMessages(library(Biostrings))
+suppressMessages(library(seqinr))
+suppressMessages(library(adegenet))
+suppressMessages(library(ape))
+suppressMessages(library(ggtree))
+suppressMessages(library(DECIPHER))
+suppressMessages(library(viridis))
+suppressMessages(library(ggplot2))
+
+```
+
+Definiendo las variables de las variantes \n
+
+```{r}
+Var_MT121215 <- read.fasta("MT121215.fasta.txt") 
+Var_MT040333 <- read.fasta("MT040333.fasta.txt")
+Var_MG772933 <- read.fasta("MG772933.fasta.txt")
+Var_MN996532 <- read.fasta("MN996532.fasta.txt")
+Var_MG772934 <- read.fasta("MG772934.fasta.txt")
+Var_KJ473808 <- read.fasta("KJ473808.fasta.txt")
+Var_KJ473809 <- read.fasta("KJ473809.fasta.txt")
+Var_KJ473810 <- read.fasta("KJ473810.fasta.txt")
+Var_KJ473811 <- read.fasta("KJ473811.fasta.txt")
+Var_KJ473812 <- read.fasta("KJ473812.fasta.txt")
+Var_KJ473813 <- read.fasta("KJ473813.fasta.txt")
+Var_KJ473814 <- read.fasta("KJ473814.fasta.txt")
+Var_KJ473815 <- read.fasta("KJ473815.fasta.txt")
+Var_KJ473816 <- read.fasta("KJ473816.fasta.txt")
+Var_KJ473820 <- read.fasta("KJ473820.fasta.txt")
+Var_KJ473821 <- read.fasta("KJ473821.fasta.txt")
+Var_KJ473822 <- read.fasta("KJ473822.fasta.txt")
+Var_MT012098 <- read.fasta("MT012098.fasta.txt")
+Var_MT121216 <- read.fasta("MT121216.fasta.txt")
+Var_MT123291 <- read.fasta("MT123291m.fasta.txt")
+```
+
+Longitud de cada variante \n
+
+```{r}
+length(Var_MT121215[[1]])
+length(Var_MT040333[[1]])
+length(Var_MG772933[[1]])
+length(Var_MN996532[[1]])
+length(Var_MG772934[[1]])
+length(Var_KJ473808[[1]])
+length(Var_KJ473809[[1]])
+length(Var_KJ473810[[1]])
+length(Var_KJ473811[[1]])
+length(Var_KJ473812[[1]])
+length(Var_KJ473813[[1]])
+length(Var_KJ473814[[1]])
+length(Var_KJ473815[[1]])
+length(Var_KJ473816[[1]])
+length(Var_KJ473820[[1]])
+length(Var_KJ473821[[1]])
+length(Var_KJ473822[[1]])
+length(Var_MT012098[[1]])
+length(Var_MT121216[[1]])
+length(Var_MT123291[[1]])
+```
+
+Gráfica de las variantes con la cantidad de nucleotidos para mejor observación de cada una \n
+
+```{r}
+tabla <- data.frame(virus = rep(c("1", "2", "3", "4", "5","6", "7", "8", "9", "10","11", "12", "13", "14", "15","16", "17", "18", "19", "20"), each = 4),
+                     nucleotido = rep(c("Adenina(A)", "Citocina(C)", "Guanina(G)", "Timina(T)"), 20),
+                     cantidad = c(count(Var_MT121215[[1]], 1), count(Var_MT040333[[1]], 1), count(Var_MG772933[[1]], 1), count(Var_MN996532[[1]], 1), count(Var_MG772934[[1]],1),count(Var_KJ473808[[1]], 1), count(Var_KJ473809[[1]], 1), count(Var_KJ473810[[1]], 1), count(Var_KJ473811[[1]], 1), count(Var_KJ473812[[1]],1),count(Var_KJ473813[[1]], 1), count(Var_KJ473814[[1]], 1), count(Var_KJ473815[[1]], 1), count(Var_KJ473816[[1]], 1), count(Var_KJ473820[[1]],1),count(Var_KJ473821[[1]], 1), count(Var_KJ473822[[1]], 1), count(Var_MT012098[[1]], 1), count(Var_MT121216[[1]], 1),count(Var_MT121216[[1]], 1)))
+
+# Create graph
+ggplot(data = tabla, aes(x = virus, y = cantidad, fill = nucleotido)) +
+  geom_bar(position = "dodge", stat = "identity") 
+```
+
+\n INTERPRETACIÓN DE LA GRÁFICA: \n
+
+Con base en la gráfica, se observan diferentes aspectos importantes que brindan información clave sobre el comportamiento del virus, algo que destacar a primera vista es que la cantidad de Timina es superior a todas las demás, seguida de Adenina, Guanina y Citocina, pero en realidad, ¿Qué podemos concluir de ello? Pues bien, los virus que tienen una parte mayoritaria de Adenina y Timina, como es el caso de todos los animales y sus respectivas mutaciones del coronavirus junto con la cepa original Sars-coV-2, son virus con un genoma mucho más estable, lo cual provoca que tenga una mejor capacidad de replicación y transmisión; Mientras que en el caso de los otros virus que tienen una cantidad mayor de Guanina y Citocina, son virus con un genoma mucho más inestable y son más propensos a mutaciones. Debido a esto, podemos concluir que tanto la cepa original como las variantes tienen una gran capacidad de replicación y transmisión debido a su frecuencia de nucleótidos.\n
+
+Ahora bien, ¿A qué se debe que los genomas de cada una de cada uno de los virus tengan una estructura tan similar? Pues bien, esto se debe a que las variantes son mutaciones del virus original. Los virus incluyendo el Sars-Cov-2 se replican a través de la enzima ARN polimerasa, que a veces comete algunos errores al momento de replicarse y esto puede dar lugar a las mutaciones y a medida que el virus se propaga, las mutaciones se van quedando en el genoma viral y termina provocando las variantes del virus con diferentes características cada una, pero sin cambiar tanto entre cada una de ellas.\n
+
+En conclusión, las 20 diferentes secuencias de coronavirus tienen una estructura similar a la del virus Sars-coV-2, debido a que el virus se originó en alguno de estas especies, las cuales son el murciélago y el pangolín. Las del murciélago podemos ver que tienen una estructura más similar entre sí, que con las del pangolín y viceversa, esto se debe a que cada una de las especies se vio expuesta a diferentes situaciones a lo largo de su historia evolutiva, por lo que el virus mutó de diferentes formas, sin embargo las características del Sars-coV-2 todas las comparten ya que todas vienen de un ancestro en común. \n
+
+
+```{r}
+var_animales <- c(  "MT121215", "MT040333", "MG772933", "MN996532", "MG772934", "KJ473808","KJ473809","KJ473810", "KJ473811", "KJ473812", "KJ473813", "KJ473814", "KJ473815", "KJ473816","KJ473820","KJ473821", "KJ473822", "MT012098", "MT121216", "MT123291")
+
+```
+
+2.Obtén las secuencias:  \n
+
+```{r}
+var_animales_sequences <- read.GenBank(var_animales)
+```
+
+3. Estructura del DNABin:  \n
+
+```{r}
+str(var_animales_sequences)
+```
+
+```{r}
+attributes(var_animales_sequences)
+names(var_animales_sequences)
+attr(var_animales_sequences, "species")
+```
+
+4. Concentraremos en un archivo todas las secuencias:  \n
+
+```{r}
+write.dna(var_animales_sequences,  file ="var_animales_seqs.fasta", format = "fasta", append =
+FALSE, nbcol = 6, colsep = " ", colw = 10)
+```
+
+5. Cargamos la secuencias:  \n
+
+```{r}
+var_animales_seq_not_align <- readDNAStringSet("var_animales_seqs.fasta", format = "fasta")
+var_animales_seq_not_align
+```
+
+6. Alineamiento de las secuencias:  \n
+
+```{r}
+var_animales_seq_not_align <- OrientNucleotides(var_animales_seq_not_align)
+
+var_animales_seq_align <- AlignSeqs(var_animales_seq_not_align)
+```
+
+7. Visualizar el resultado del alineamiento:  \n
+
+```{r}
+BrowseSeqs(var_animales_seq_align, highlight=0)
+```
+
+8. Guardar el resultado:  \n
+
+```{r}
+writeXStringSet(var_animales_seq_align, file="var_animales_seq_align.fasta")
+```
+
+9. Obtener el nuevo archivo:  \n
+
+```{r}
+var_animales_aligned <- read.alignment("var_animales_seq_align.fasta", format = "fasta")
+```
+
+10. Crear una matriz de distancia:  \n
+
+```{r}
+matriz_distancia <- dist.alignment(var_animales_aligned, matrix = "similarity")
+```
+
+11. Creación del árbol con el paquete ape:  \n
+
+```{r}
+var_animales_tree <- nj(matriz_distancia)
+class(var_animales_tree) 
+var_animales_tree <- ladderize(var_animales_tree)
+```
+
+12. Plot del árbol:  \n
+
+```{r}
+plot(var_animales_tree, cex = 0.6)
+title("Variantes de animales con virus parecidos al Sars-Cov-2")
+```
+
+\n INTERPRETACIÓN DEL ÁRBOL FILOGENÉTICO: \n
+
+Los árboles filogenéticos representan la relación evolutiva que se ha dado entre distintos seres vivo a lo largo del tiempo, mientras que los genomas son la totalidad del material genético de un organismo [1,2]. Estos conceptos son la base para poder comprender la diversidad y evolución a lo largo del tiempo y de los distintos seres vivos que han habitado en nuestro planeta. Además, la secuenciación del genoma y la construcción de árboles filogenéticos son herramientas importantes para el estudio de las zoonosis, que son las enfermedades infecciosas que se transmiten de los animales a los humanos [3]. \n
+
+El árbol filogenético muestra una clara separación entre los coronavirus de pangolín y los coronavirus de murciélago, incluyendo el SARS-CoV-2 que es una relación entre estos. \n 
+
+Lo primero que podemos dar a notar de la gráfica es que el árbol filogenético muestra una clara separación entre los coronavirus de pangolín y los de murciélago, incluyendo el SARS-CoV-2 que es una relación entre estos [4]. Respecto a los coronavirus del murciélago podemos ver que contiene varias subramas que engrupan a los coronavirus que comparten más características entre cada uno, la primera subrama contiene a los virus (KJ473808, KJ473809, KJ473810, KJ473820, KJ473821 y KJ473822), los cuales son muy similares entre ellos y debido a su ubicación en el árbol, podemos saber que son los que más se parecen a los virus del pangolín. Por lo que su historia evolutiva pudo haber tenido más similitud con la del pangolín que la que tuvieron los murciélagos de la segunda subrama, en la cual tenemos a los virus (KJ473811, KJ473812, KJ473813, KJ473814, KJ473815, KJ473816). \n
+
+Mientras que en la rama de los coronavirus de pangolín, están agrupados junto al SARS-CoV-2. Dentro de esta rama, los virus están muy relacionados entre sí, lo que sugiere una posible evolución a partir de un ancestro común y situaciones parecidas a lo largo de su historia.[5] \n
+
+Algo muy importante que podemos mencionar y en lo que nos enfocaremos en este análisis, es en el virus PCoV_GX-P4L(MT040333), el cual es el único virus de pangolín que no está en la primera rama donde están los demás de su especie, esto lo que nos puede decir es que podría tener un origen diferente al resto de los coronavirus de pangolín o ser una mutación junto con algún virus del murciélago. Podemos llegar a esta conclusión, gracias a las citas mencionadas anteriormente, en las cuales podemos ver la importancia de la historia evolutiva de las especies y como tienen un ancestro en común que fue el que les dio ciertas características, o en este caso virus similares. En el mercado de animales vivos en Wuhan China, se tomaron muestras de 10 distintos pangolines, en los que se pudo observar que tenía un gran parecido con el Sars-coV-2, además de que la mayoría de primeros contagios del virus coincidieron que tenían algo relacionado o habían estado en el mercado de Huanan [6,7].Gracias a todos estos datos podemos formular una hipótesis, la cuál es que el virus se transmitió en el mercado de animales vivos de Wuhan, China, probablemente a través de una especie similar a la del pangolín con su mutación del virus Sars-coV-2, llamada PCoV_GX-P4L la cuál gracias a la interpretación del árbol filogenético vemos que puede llegar a ser una mutación entre las variantes normales de su especie y las de los murciélagos. Además de que el virus se pudo haber transmitido debido al constante contacto de los humanos con los animales como el pangolín, murciélago, conejos, etc... Por lo que terminó ocurriendo el efecto de zoonosis con alguna persona en ese mercado y debido a ello se transmitió el virus Sars-cov-2 \n
+
+En conclusión, en el árbol filogenético, podemos observar una clara diferencia entre los virus de murciélago y los del pangolín, cosa que es bastante normal ya que a pesar de que pudieron haber tenido un ancestro en común y por eso tener las dos distintas variantes de coronavirus y del SARS-CoV-2, en algún momento las especies tuvieron que pasar por diferentes cosas, por lo que se dio el cambio notable que podemos notar entre una y otra. Dada la similitud que hay si se puede pensar que vienen de n ancestro común, pero debido tanto a las situaciones geográficas donde sus descendientes se vieron expuestos, los peligros a los que se enfrentaron, etc... El virus mutó de diferentes formas y por eso podemos observar tantas variantes del mismo virus. Otra característica muy importante del árbol es el virus PCoV_GX-P4L, que es de un pangolín, pero que está separado al resto de los de su especie, esto se pudo haber dado, debido a que su historia evolutiva fue distinta a los de otro de su especie y posiblemente tuvo alguna similitud con lo que tuvieron que adaptarse los murciélagos.[5] \n
+
+Los cambios que podemos ver en las subramas más chicas de cada rama principal, lo que nos indica es que tienen un mayor parecido entre cada una mientras más cerca esté una de la otra, y esto se debe a que tienen varios ancestros en común y se vieron expuestos a situaciones muy parecidas, por lo que las mutaciones de los virus no difieren mucho unas de las otras.\n
+
+CONCLUSIÓN DEL PROYECTO:  \n
+
+En base a las gráficas observadas a lo largo del trabajo, podemos sacar varios datos importantes, primero que nada, debido a que las variantes que más se parecen al Sars-coV-2 son del murciélago y el pangolín, lo más probable es que el virus se haya dado por una mutación entre alguna de las 2 especies, por lo que podemos identificar que el virus se dio por el fenómeno de zoonosis, el cual es la transmisión de enfermedades infecciosas de animales a humanos [3]. \n
+
+Otra cosa que podemos observar es dado que estamos tratando con dos diferentes especies, el árbol filogenético tiene 2 grandes ramas que justamente se separan entre murciélagos y pangolines en su mayoría. Esto se debe a que a pesar de que probablemente tengan un antepasado en común y por ello tengan las 2 especies el coronavirus, cada una de las especies se vio expuesta a diferentes situaciones a lo largo de su historia evolutiva y por ello también se nota una diferencia entre si son coronavirus de un pangolín o un murciélago. Pudimos observar que hay un coronavirus de pangolín que tiene una similitud con los de murciélagos, este podría ser el caso del virus de Sars-coV-2, puesto que pudo haber sido una mutación de virus de murciélagos y pangolines, por lo que regresamos al fenómeno de la zoonosis, ya que en China conviven demasiado con animales y el virus se cree que pudo haberse presentado en un mercado de animales vivos en Wuhan China, dado que los trabajadores y compradores conviven tanto con los animales en ese tipo de lugares, es probable que el virus se haya contagiado a algún humano de dicha forma.  \n
+
+
+REFERENCIAS: \n
+
+- [1] Felsenstein, J. (2004). Inferring Phylogenies. Sinauer Associates. \n
+
+- [2] Alberts, B., et al. (2014). Molecular Biology of the Cell. Garland Science.\n
+
+- [3] Parrish, C. R., & Holmes, E. C. (2021). More RNA Virus Evolution. John Wiley & Sons. \n
+
+- [4] Zhang, T., Wu, Q., Zhang, Z. (2020). Probable Pangolin Origin of SARS-CoV-2 Associated with the COVID-19 Outbreak. Current Biology, 30(7), 1346-1351. https://doi.org/10.1016/j.cub.2020.03.022 \n
+
+- [5] Duffy, S., & Shackelton, L. A. (2020). The Evolution and Analysis of Animal Virus Infection Histories. PLoS Pathogens, 16(4), e1008408. https://doi.org/10.1371/journal.ppat.1008408 \n
+
+- [6] Lam, T. T., Shum, M. H., Zhu, H. C., Tong, Y. G., Ni, X. B., Liao, Y. S., ... & Ho, S. Y. (2020). Identifying SARS-CoV-2 related coronaviruses in Malayan pangolins. Nature, 583(7815), 282-285. https://doi.org/10.1038/s41586-020-2169-0 \n
+
+- [7] Wu, F., Zhao, S., Yu, B., Chen, Y. M., Wang, W., Song, Z. G., ... & Zhang, Y. Z. (2020). A new coronavirus associated with human respiratory disease in China. Nature, 579(7798), 265-269. https://doi.org/10.1038/s41586-020-2008-3 \n
+
+
+- Andersen, K. G., Rambaut, A., Lipkin, W. I., Holmes, E. C., & Garry, R. F. (2020). The proximal origin of SARS-CoV-2. Nature Medicine, 26(4), 450-452. doi: 10.1038/s41591-020-0820-9 \n
+
+- Chan, J. F. W., Kok, K. H., Zhu, Z., Chu, H., To, K. K. W., Yuan, S., & Yuen, K. Y. (2020). Genomic characterization of the 2019 novel human-pathogenic coronavirus isolated from a patient with atypical pneumonia after visiting Wuhan. Emerging Microbes & Infections, 9(1), 221-236. doi: 10.1080/22221751.2020.1719902 \n
+
+- Li, Q., Wu, J., Nie, J., Zhang, L., Hao, H., Liu, S., & Wang, G. (2020). The impact of mutations in SARS-CoV-2 spike on viral infectivity and antigenicity. Cell, 182(5), 1284-1294.e9. doi: 10.1016/j.cell.2020.07.012 \n
+
+- Lloyd-Smith, J. O., George, D., Pepin, K. M., Pitzer, V. E., Pulliam, J. R. C., Dobson, A. P., & Hudson, P. J. (2009). Epidemic dynamics at the human-animal interface. Science, 326(5958), 1362-1367. doi: 10.1126/science.1177345 \n
+
+- Malik, Y. S., Sircar, S., Bhat, S., Sharun, K., Dhama, K., Dadar, M., & Tiwari, R. (2021). Emerging novel coronavirus (2019-nCoV)-current scenario, evolutionary perspective based on genome analysis and recent developments. Veterinary Quarterly, 41(1), 68-76. doi: 10.1080/01652176.2021.1717793 \n
+
+- Zhang, T., Wu, Q., & Zhang, Z. (2021). Probable pangolin origin of SARS-CoV-2 associated with the COVID-19 outbreak. Current Biology, 30(7), 1346-1351.e2. doi: 10.1016/j.cub.2020.03.022 \n
+
+- NCBI Virus. (2023). Nih.gov. https://www.ncbi.nlm.nih.gov/labs/virus/vssi/#/virus?SeqType_s=Nucleotide&VirusLineage_ss=taxid:2697049   \n
+
+- SARS-CoV-2 Variants Overview. (2023). Nih.gov. https://www.ncbi.nlm.nih.gov/activ    \n
+
+
+
+
